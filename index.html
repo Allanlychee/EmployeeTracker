@@ -5,14 +5,20 @@
   <meta charset="UTF-8">
   <title>Employee Data Management</title>
 
-  <!-- CSS Reset Sheet -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css">
-  <!-- Bootstrap -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-    crossorigin="anonymous">
-  <!-- CSS Sheet -->
-  <link rel="stylesheet" href="assets/css/style.css">
-  <!-- Google Fonts -->
+  <head>
+    <meta charset="UTF-8">
+    <title>Employee Data Management</title>
+
+    <!-- CSS Reset Sheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous">
+    <!-- CSS Sheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+
+  </head>
 
 </head>
 
@@ -33,7 +39,6 @@
 
         <div class="row">
           <div class="col-md-12">
-
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h3 class="panel-title">
@@ -51,6 +56,14 @@
                       <th>Months Worked</th>
                       <th>Monthy Rate</th>
                       <th>Total Billed</th>
+                    </tr>
+                    <tr>
+                      <td id="empName"></td>
+                      <td id="empRole"></td>
+                      <td id="empDate"></td>
+                      <td id="empWorked"></td>
+                      <td id="empRate"></td>
+                      <td id="empTotal"></td>
                     </tr>
                   </thead>
                   <tbody>
@@ -82,7 +95,7 @@
                   </div>
                   <div class="form-group">
                     <label for="date-input">
-                      Start Date (DD/MM/YY)
+                      Start Date (MM/DD/YY)
                     </label>
                     <input type="start-date" class="form-control" id="startDate" />
 
@@ -91,10 +104,10 @@
                     <label for="rate-input">
                       Monthly Rate
                     </label>
-                    <input type="rate" class="form-control" id="var monthlyRate" />
+                    <input type="rate" class="form-control" id="monthlyRate" />
                   </div>
 
-                  <button type="submit" class="btn btn-default" id="submit">
+                  <button type="submit" class="btn btn-default" id="submitBTN">
                     Submit
                   </button>
                 </form>
@@ -106,11 +119,87 @@
     </div>
   </div>
 
-  //jquery
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> //momentjs
+  <script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
+  <!--jquery-->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!--//momentjs-->
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script> //backendjs
-  <script type="text/javascript" src="#"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+  <!--//backendjs -->
+  <!-- <script type="text/javascript" src="main.js"></script> -->
+  <script>
+
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyCJ-ReRnQoo-srdudik-rfey-HSrqLXK3U",
+      authDomain: "whatever-first.firebaseapp.com",
+      databaseURL: "https://whatever-first.firebaseio.com",
+      projectId: "whatever-first",
+      storageBucket: "whatever-first.appspot.com",
+      messagingSenderId: "110419074122"
+    }
+
+    firebase.initializeApp(config)
+
+    var database = firebase.database()
+
+    var users = database.ref('/users')
+    var monthsWorked = $('#monthsWorked')
+    var totalBilled = $('#totalBilled')
+    var startDate = $('#startDate').val()
+
+
+    $('#submitBTN').on('click', function () {
+      var name = $('#name').val().trim() //UserInput
+      var role = $('#role').val().trim() //UserInput
+      var startDate = $('#startDate').val() //UserInput
+      var UnixDate = moment($("#startDate").val().trim(), "DD/MM/YYYY").format("MM/DD/YYYY")
+      var monthlyRate = parseInt($('#monthlyRate').val()) //userInput
+
+      users.push({
+        name: name,
+        role: role,
+        Start_Date: startDate,
+        Unix_Date: UnixDate,
+        Months_Worked: monthsWorked,
+        Monthly_Rate: monthlyRate,
+        Total_Billed: totalBilled
+
+      })
+    })
+    database.ref('/users').on('child_added', function (snap) {
+      $("#empName").text(snap.val().name)
+      $("#empRole").text(snap.val().role)
+      $("#empDate").text(snap.val().Start_Date)
+      $("#empRate").text(snap.val().Monthly_Rate)
+      console.log(snap.val())
+    })
+    
+    function months() {
+      var employDate = moment(startDate, 'MM/DD/YYYY').format('MM/DD/YYYY')
+      var currMoment = moment().format('MM/DD/YYYY')
+      
+      var t = UnixDate
+      var formatted = t.format("dd.mm.yyyy hh:MM:ss");
+      
+      console.log(diffMoment)
+      $("#empWorked").text(formatted)
+    }
+    months()
+
+
+// function(Bill) {
+//   //monthly rate * years
+// }
+
+// users.orderByChild('number').on('child_added', function (snap) {
+//     console.log(snap.val())
+// })
+
+// console.log(moment(startDate, 'DD/MM/YYYY').format('MM/DD/YY'))
+
+
+  </script>
 </body>
 
 </html>
